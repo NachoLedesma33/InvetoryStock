@@ -1,4 +1,4 @@
-"use cliente";
+"use client";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -21,11 +21,11 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Productos</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <main className="container p-4 mx-auto">
+      <h1 className="mb-6 text-3xl font-bold">Productos</h1>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {products.map((product) => (
-          <div key={product.id} className="border p-4 rounded-lg">
+          <div key={product.id} className="p-4 border rounded-lg">
             <Image
               src={product.image}
               alt={product.title}
@@ -33,7 +33,7 @@ export default function Home() {
               height={48}
               className="object-contain mx-auto"
             />
-            <h2 className="text-xl font-semibold mt-2">{product.title}</h2>
+            <h2 className="mt-2 text-xl font-semibold">{product.title}</h2>
             <p className="text-gray-600">${product.price}</p>
           </div>
         ))}
