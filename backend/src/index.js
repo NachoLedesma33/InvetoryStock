@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/products", productsRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const startServer = async () => {
   await testConnection();
@@ -17,7 +17,7 @@ const startServer = async () => {
   await ProductServices.fetchProducts();
 
   app.listen(PORT, () =>
-    console.log(`Servidor escuchando en el puerto ${PORT}`)
+    console.log(`🚀 Servidor escuchando en el puerto ${PORT}`)
   );
 };
 
