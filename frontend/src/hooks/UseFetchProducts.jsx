@@ -14,11 +14,12 @@ export default function useFetchProducts() {
                 setProducts(data);
             }
             catch(error){
+                console.log("No se pudieron obtener los Productos ❌")
                 setError(error.message, error)
             }
             finally{
                 setLoading(false)
-            f}
+            }
         }
     }, [])
     return {
