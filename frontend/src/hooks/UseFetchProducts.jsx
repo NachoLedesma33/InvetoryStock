@@ -1,30 +1,31 @@
-import {useState, useEffect} from "react";
+"use client";
 
+import { useState, useEffect } from 'react';
 
 export default function useFetchProducts() {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchProducts = async () =>{
-            try{
-                const response = await fetch("http://localhost:4000/products");
-                const data = await response.json();
-                setProducts(data);
-            }
-            catch(error){
-                console.log("No se pudieron obtener los Productos ❌")
-                setError(error.message, error)
-            }
-            finally{
-                setLoading(false)
-            }
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/products');
+        if (!res.ok) {
+          throw new Error('Error al obtener productos');
         }
-    }, [])
-    return {
-        products,
-        loading,
-        error
-    }
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return { products, loading, error };
 }
+
