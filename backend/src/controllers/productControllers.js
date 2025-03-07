@@ -6,6 +6,7 @@ const productCrontroller = {
       const products = await ProductServices.getPruduts();
       res.status(200).json(products);
     } catch (error) {
+      console.log("Error al econtrar todos lo productos");
       next(error);
     }
   },
@@ -18,6 +19,7 @@ const productCrontroller = {
         ? res.status(200).json(product)
         : res.status(404).json({ message: "Producto no encontrado" });
     } catch (error) {
+      console.log("Error al econtrar el producto");
       next(error);
     }
   },
@@ -26,6 +28,7 @@ const productCrontroller = {
       const newProduct = await ProductServices.createProduct(req.body);
       res.status(201).json(newProduct);
     } catch (error) {
+      console.log("Error al crear el producto");
       next(error);
     }
   },
@@ -39,6 +42,7 @@ const productCrontroller = {
       );
       res.status(200).json(updateProduct);
     } catch (next) {
+      console.log("Error al actualizar el producto");
       next(error);
     }
   },
@@ -48,6 +52,7 @@ const productCrontroller = {
       await ProductServices.deleteProductById(id);
       res.status(204).json();
     } catch (error) {
+      console.log("Error al eliminar el producto");
       next(error);
     }
   },
