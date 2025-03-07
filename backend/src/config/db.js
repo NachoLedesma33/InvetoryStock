@@ -1,19 +1,24 @@
 import { Sequelize } from "sequelize";
-import config from "./env.js";
+import {config} from "./env.js";
+import { fileURLToPath } from "url";
+import path from "path";
 
-const sequelize = new Sequelize({
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const db = new Sequelize({
   dialect: "sqlite",
-  storage: config.db_storage,
-  logging: false,
-});
+  storage: path.join(__dirname, "../../", config.DB_PATH || "./database.sqlite"),
+  logging: config.NODE.ENV === "development" ? console.log : false
+})
 
-const testConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Conexion exitosa a la base de datos.");
-  } catch (error) {
-    console.log("❌ No se pudo conectar a la base de datos." + error);
+
+export const initDatabase = async () =>{
+  try{
+    await db.authenticate();
+    console.log("✅ Conectado a la base de datos.");
+    return db
+  }catch(error){
+    console.log("❌ No se pudo conectar a la base de datos.");
   }
-};
-
-export { sequelize, testConnection };
+}
