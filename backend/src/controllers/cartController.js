@@ -46,7 +46,7 @@ const cartController = {
         } catch (error) {
             
             console.log("Error al actualizar el carrito");
-            if (error.message === "Carrito activo no encontrado" || error.message === "Producto no encontrado") {
+            if (error.message === "Carrito activo no encontrado" || error.message === "Carrito vacio") {
                 res.status(404).json({ message: error.message })
             };
             res.status(500).json({ message: "Error al actualizar el carrito" });
@@ -60,7 +60,7 @@ const cartController = {
             res.status(200).json(cart);
         } catch (error) {
             console.log("Error al eliminar el carrito");
-            if (error.message === "Carrito activo no encontrado" || error.message === "Producto no encontrado") {
+            if (error.message === "Carrito activo no encontrado" || error.message === "Carrito vacio") {
                 res.status(404).json({ message: error.message })
             };
             res.status(500).json({ message: "Error al eliminar el carrito" });
@@ -80,6 +80,20 @@ const cartController = {
             res.status(500).json({ message: "Error al limpiar el carrito" });
             next(error);
         }
+    },
+    checkoutCart: async (req, res, next) =>{
+        try {
+            const { userId } = req.params
+            const cart = await cartService.checkoutCart(userId)
+            res.status(200).json(cart)
+          } catch (error) {
+            console.error("Error en verificar el controlador del carrito")
+        
+            if (error.message === "Carrito activo no encontrado" || error.message === "Carrito vacio") {
+              return res.status(400).json({ message: error.message })
+            }
+        
+            res.status(500).json({ message: "Error en verificar el carrito", error: error.message })
     }
 }
 
