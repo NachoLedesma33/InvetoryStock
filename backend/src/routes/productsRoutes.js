@@ -1,10 +1,11 @@
 import express from "express";
-import productCrontroller from "./../controllers/productControllers.js";
+import productController from "../controllers/productController.js";
 
 export const router = express.Router();
 
-router.get("/", productCrontroller.getAllProducts);
-router.get("/:id", productCrontroller.getProductById);
-router.post("/", productCrontroller.createProduct);
-router.put("/:id", productCrontroller.updateProductById);
-router.delete("/:id", productCrontroller.deleteProductById);
+router.get("/", productController.getAllProducts);
+router.get("/categories", productController.getCategories);
+router.get("/:id", productController.getProductById);
+router.post("/", productController.createProduct);
+router.put("/:id", productController.updateProductById);
+router.delete("/:id", productController.deleteProductById);
