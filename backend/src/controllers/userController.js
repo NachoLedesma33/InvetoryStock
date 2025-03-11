@@ -1,4 +1,4 @@
-import { UserService } from "../services/userServices.js";
+import { UserService } from "../services/userService.js";
 
 export const userController = {
   getAllUsers: async (req, res, next) => {
@@ -10,6 +10,7 @@ export const userController = {
       next(error);
     }
   },
+
   getUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -23,42 +24,55 @@ export const userController = {
       next(error);
     }
   },
+
   createUser: async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
-      if (!username || !email || !password) {
-        return res.status(400).json({ message: "Los datos son requeridos" });
-      }
       const user = await UserService.createUser({ username, email, password });
       res.status(201).json(user);
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         return res.status(409).json({ message: "El usuario ya existe" });
       }
+      if (error.message.includes("requeridos") || error.message.includes("contraseña")) {
+        return res.status(400).json({ message: error.message });
+      }
       console.log("Error al crear el usuario");
       next(error);
     }
   },
+
   updateUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
       const updatedUser = await UserService.updateUserById(id, req.body);
       res.status(200).json(updatedUser);
     } catch (error) {
+      if (error.message === "Usuario no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
+      if (error.message.includes("contraseña")) {
+        return res.status(400).json({ message: error.message });
+      }
       console.log("Error al actualizar el usuario");
       next(error);
     }
   },
+
   deleteUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      await UserServices.deleteUserById(id);
-      res.status(204).json();
+      const result = await UserService.deleteUserById(id);
+      res.status(200).json(result);
     } catch (error) {
+      if (error.message === "Usuario no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
       console.log("Error al eliminar el usuario");
       next(error);
     }
   },
+
   login: async (req, res, next) => {
     try {
       const { username, password } = req.body;
@@ -70,26 +84,26 @@ export const userController = {
         password,
       });
       if (!user) {
-        return res.status(401).json({ message: "Credenciales invalidas" });
+        return res.status(401).json({ message: "Credenciales inválidas" });
       }
       res.status(200).json(user);
     } catch (error) {
-      console.log("Error al iniciar sesión");
+      console.log("Error al iniciar sesión");
       next(error);
     }
   },
+
   getDefaultUser: async (req, res, next) => {
     try {
       const defaultUser = await UserService.getDefaultUser();
       res.status(200).json({
         message: "Usuario por defecto",
-        email: {
-          username: defaultUser.username,
-          email: defaultUser.email,
-          password: "Para la demo la contraseña es: demo123",
-        },
+        user: defaultUser
       });
     } catch (error) {
+      if (error.message === "Usuario demo no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
       next(error);
     }
   },

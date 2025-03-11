@@ -8,7 +8,7 @@ export class UserService {
       const defaultUser = {
         username: "demo",
         email: "demo@demo.com",
-        password: "demo123",
+        password: await bcrypt.hash("demo123", 10),
       };
       const [user, created] = await User.findOrCreate({
         where: { username: defaultUser.username },
@@ -28,6 +28,7 @@ export class UserService {
       throw error;
     }
   }
+
   static async getAllUsers() {
     try {
       return await User.findAll({
@@ -38,18 +39,29 @@ export class UserService {
       throw error;
     }
   }
+
   static async getUserById(id) {
     try {
-      return await User.findByPk(id, {
+      const user = await User.findByPk(id, {
         attributes: { exclude: ["password"] },
       });
+      if (!user) throw new Error("Usuario no encontrado");
+      return user;
     } catch (error) {
       console.log("❌Error al obtener el usuario por su id");
       throw error;
     }
   }
+
   static async createUser(userData) {
     try {
+      if (!userData.username || !userData.email || !userData.password) {
+        throw new Error("Todos los campos son requeridos");
+      }
+      if (userData.password.length < 6) {
+        throw new Error("La contraseña debe tener al menos 6 caracteres");
+      }
+
       const hashedPassword = await bcrypt.hash(userData.password, 10);
       const newUser = await User.create({
         ...userData,
@@ -63,14 +75,19 @@ export class UserService {
       throw error;
     }
   }
+
   static async updateUserById(id, userData) {
     try {
       const user = await User.findByPk(id);
       if (!user) throw new Error("Usuario no encontrado");
+
       if (userData.password) {
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        userData.password = hashedPassword;
+        if (userData.password.length < 6) {
+          throw new Error("La contraseña debe tener al menos 6 caracteres");
+        }
+        userData.password = await bcrypt.hash(userData.password, 10);
       }
+
       await user.update(userData);
       const { password, ...userWithoutPassword } = user.toJSON();
       return userWithoutPassword;
@@ -79,25 +96,44 @@ export class UserService {
       throw error;
     }
   }
+
   static async deleteUserById(id) {
     try {
       const user = await User.findByPk(id);
       if (!user) throw new Error("Usuario no encontrado");
       await user.destroy();
-      return { message: "Usuario eliminado" };
+      return { message: "Usuario eliminado exitosamente" };
     } catch (error) {
       console.log("❌Error al eliminar el usuario");
       throw error;
     }
   }
+
   static async authenticateUser({ username, password }) {
     try {
       const user = await User.findOne({ where: { username } });
       if (!user) return null;
-      const { password, ...userWithoutPassword } = user.toJSON();
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) return null;
+
+      const { password: _, ...userWithoutPassword } = user.toJSON();
       return userWithoutPassword;
     } catch (error) {
       console.log("❌Error al autenticar el usuario");
+      throw error;
+    }
+  }
+
+  static async getDefaultUser() {
+    try {
+      const user = await User.findOne({ where: { username: "demo" } });
+      if (!user) throw new Error("Usuario demo no encontrado");
+
+      const { password, ...userWithoutPassword } = user.toJSON();
+      return userWithoutPassword;
+    } catch (error) {
+      console.log("❌Error al obtener el usuario demo");
       throw error;
     }
   }
