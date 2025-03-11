@@ -1,9 +1,9 @@
-import { ProductServices } from "../services/productsServices.js";
+import { ProductService } from "../services/productsService.js";
 
-const productCrontroller = {
+const productController = {
   getAllProducts: async (req, res, next) => {
     try {
-      const products = await ProductServices.getPruduts();
+      const products = await ProductService.getPruduts();
       res.status(200).json(products);
     } catch (error) {
       console.log("Error al econtrar todos lo productos");
@@ -14,7 +14,7 @@ const productCrontroller = {
   getProductById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const product = await ProductServices.getProductById(id);
+      const product = await ProductService.getProductById(id);
       product
         ? res.status(200).json(product)
         : res.status(404).json({ message: "Producto no encontrado" });
@@ -25,7 +25,7 @@ const productCrontroller = {
   },
   createProduct: async (req, res, next) => {
     try {
-      const newProduct = await ProductServices.createProduct(req.body);
+      const newProduct = await ProductService.createProduct(req.body);
       res.status(201).json(newProduct);
     } catch (error) {
       console.log("Error al crear el producto");
@@ -36,7 +36,7 @@ const productCrontroller = {
   updateProductById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const updateProduct = await ProductServices.updateProductById(
+      const updateProduct = await ProductService.updateProductById(
         id,
         req.body
       );
@@ -49,7 +49,7 @@ const productCrontroller = {
   deleteProductById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      await ProductServices.deleteProductById(id);
+      await ProductService.deleteProductById(id);
       res.status(204).json();
     } catch (error) {
       console.log("Error al eliminar el producto");
@@ -58,4 +58,4 @@ const productCrontroller = {
   },
 };
 
-export default productCrontroller;
+export default productController;

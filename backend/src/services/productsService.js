@@ -1,11 +1,11 @@
 import axios from "axios";
 import { Product } from "../models/Product.js";
 
-export class ProductServices {
+export class ProductService {
   static async fetchProducts() {
     try {
       const response = await axios.get(process.env.API_URL);
-      const procducts = response.data.map((item) => ({
+      const products = response.data.map((item) => ({
         id: item.id,
         title: item.title,
         price: item.price,
@@ -13,7 +13,7 @@ export class ProductServices {
         category: item.category,
         image: item.image,
       }));
-      await Product.bulkCreate(procducts, { ignoreDuplicates: true });
+      await Product.bulkCreate(products, { ignoreDuplicates: true });
       console.log("✅ Productos cargados en la base de datos.");
     } catch (error) {
       console.log(

@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { testConnection, sequelize } from "./config/db.js";
-import { ProductServices } from "./services/productsServices.js";
+import { ProductService } from "./services/productsService.js";
 import { router as productsRouter } from "./routes/productsRoutes.js";
 
 const app = express();
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 4000;
 const startServer = async () => {
   await testConnection();
   await sequelize.sync({ force: true });
-  await ProductServices.fetchProducts();
+  await ProductService.fetchProducts();
 
   app.listen(PORT, () =>
     console.log(" 🚀 Servidor escuchando en el puerto" + PORT)
