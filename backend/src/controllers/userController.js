@@ -1,9 +1,9 @@
-import { UserServices } from "../services/userServices.js";
+import { UserService } from "../services/userServices.js";
 
 export const userController = {
   getAllUsers: async (req, res, next) => {
     try {
-      const users = await UserServices.getAllUsers();
+      const users = await UserService.getAllUsers();
       res.status(200).json(users);
     } catch (error) {
       console.log("Error al obtener los usuarios");
@@ -13,7 +13,7 @@ export const userController = {
   getUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = await UserServices.getUserById(id);
+      const user = await UserService.getUserById(id);
       if (!user) {
         return res.status(404).json({ message: "Usuario no encontrado" });
       }
@@ -29,7 +29,7 @@ export const userController = {
       if (!username || !email || !password) {
         return res.status(400).json({ message: "Los datos son requeridos" });
       }
-      const user = await UserServices.createUser({ username, email, password });
+      const user = await UserService.createUser({ username, email, password });
       res.status(201).json(user);
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
@@ -42,7 +42,7 @@ export const userController = {
   updateUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const updatedUser = await UserServices.updateUserById(id, req.body);
+      const updatedUser = await UserService.updateUserById(id, req.body);
       res.status(200).json(updatedUser);
     } catch (error) {
       console.log("Error al actualizar el usuario");
@@ -65,7 +65,7 @@ export const userController = {
       if (!username || !password) {
         return res.status(400).json({ message: "Los datos son requeridos" });
       }
-      const user = await UserServices.authenticateUser({
+      const user = await UserService.authenticateUser({
         username,
         password,
       });
@@ -80,7 +80,7 @@ export const userController = {
   },
   getDefaultUser: async (req, res, next) => {
     try {
-      const defaultUser = await UserServices.getDefaultUser();
+      const defaultUser = await UserService.getDefaultUser();
       res.status(200).json({
         message: "Usuario por defecto",
         email: {
