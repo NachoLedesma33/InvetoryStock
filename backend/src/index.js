@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { testConnection, sequelize } from "./config/db.js";
+import { initDatabase, sequelize } from "./config/db.js";
 import { ProductService } from "./services/productsService.js";
 import { UserService } from "./services/userService.js";
 import { router as productsRouter } from "./routes/productsRoutes.js";
@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 4000;
 
 const startServer = async () => {
   try {
-    await testConnection();
+    await initDatabase();
     await sequelize.sync({ alter: true });
     await UserService.createDefaultUser();
     await ProductService.fetchProducts();

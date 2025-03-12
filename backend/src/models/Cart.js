@@ -20,7 +20,7 @@ export const Cart = sequelize.define("Cart", {
   },
 });
 
-export const CartItem = sequlize.define("CartItem", {
+export const CartItem = sequelize.define("CartItem", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

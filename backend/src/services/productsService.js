@@ -4,7 +4,7 @@ import { Product } from "../models/Product.js";
 export class ProductService {
   static async fetchProducts() {
     try {
-      const response = await axios.get(process.env.API_URL);
+      const response = await axios.get(process.env.PRODUCTS_API_URL);
       const products = response.data.map((item) => ({
         id: item.id,
         title: item.title,

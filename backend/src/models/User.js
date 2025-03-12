@@ -2,13 +2,17 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
 export const User = sequelize.define("User", {
+  isApiUser: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  userName: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,

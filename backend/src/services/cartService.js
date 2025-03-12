@@ -1,7 +1,35 @@
 import { Cart, CartItem } from "../models/Cart.js";
 import { Product } from "../models/Product.js";
+import axios from "axios";
 
 export class CartService {
+  static async fetchCarts() {
+    try {
+      const response = await axios.get(process.env.CARTS_API_URL);
+      const carts = response.data;
+
+      for (const cartData of carts) {
+        const [cart] = await Cart.findOrCreate({
+          where: { id: cartData.id },
+          defaults: { userId: cartData.userId }
+        });
+        if (cartData.products && Array.isArray(cartData.products)) {
+          for (const product of cartData.products) {
+            const [cartItem] = await CartItem.findOrCreate({
+              where: { cartId: cart.id, productId: product.id },
+              defaults: { quantity: product.quantity || 1 }
+            });
+          }
+        }
+      }
+
+      console.log("✅ Carritos cargados desde la API");
+      return carts;
+    } catch (error) {
+      console.log("❌ Error al cargar los carritos desde la API");
+      throw error;
+    }
+  }
   static async getCart(userId) {
     try {
       const cart = await Cart.findOne({

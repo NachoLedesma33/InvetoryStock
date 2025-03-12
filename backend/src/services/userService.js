@@ -1,8 +1,33 @@
 import bcrypt from "bcrypt";
+import axios from "axios";
 import { User } from "../models/User.js";
 import { Cart } from "../models/Cart.js";
 
 export class UserService {
+  static async fetchUsers() {
+    try {
+      const response = await axios.get(process.env.USERS_API_URL);
+      const users = response.data;
+
+      for (const userData of users) {
+        const [user] = await User.findOrCreate({
+          where: { id: userData.id },
+          defaults: {
+            username: userData.username,
+            email: userData.email,
+            password: userData.password,
+            isApiUser: true
+          }
+        });
+      }
+
+      console.log("✅ Usuarios cargados desde la API");
+      return users;
+    } catch (error) {
+      console.log("❌ Error al cargar los usuarios desde la API");
+      throw error;
+    }
+  }
   static async createDefaultUser() {
     try {
       const defaultUser = {
