@@ -13,11 +13,11 @@ export const Product = sequelize.define("Product", {
     allowNull: false,
   },
   price: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.FLOAT,
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   category: {

@@ -9,9 +9,8 @@ const __dirname = path.dirname(__filename);
 export const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: path.join(__dirname, "../../", config.db_storage),
-  logging: process.env.NODE_ENV === "development" ? console.log : false
+  logging: false 
 })
-
 
 export const initDatabase = async () =>{
   try{
@@ -20,5 +19,6 @@ export const initDatabase = async () =>{
     return sequelize
   }catch(error){
     console.log("❌ No se pudo conectar a la base de datos.");
+    throw error;
   }
 }
