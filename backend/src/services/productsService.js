@@ -23,7 +23,6 @@ export class ProductService {
           "image",
         ],
       });
-      console.log("✅ Productos cargados en la base de datos.");
       return products;
     } catch (error) {
       console.log(
