@@ -43,7 +43,7 @@ export class UserService {
         await Cart.create({
           userId: user.id,
         });
-        console.log("✅Usuario por defecto creado");
+        console.log("✅ Usuario por defecto creado");
       } else {
         console.log("❗❗Usuario por defecto ya existe");
       }
