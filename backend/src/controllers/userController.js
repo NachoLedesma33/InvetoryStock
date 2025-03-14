@@ -1,4 +1,4 @@
-import { UserService } from "../services/userService.js";
+import { UserService } from "../services/UserServices.js";
 import jwt from "jsonwebtoken";
 
 export const userController = {
