@@ -32,7 +32,6 @@ export const useAuth = () => {
     }
   };
 
-  // Función para cerrar sesión
   const logout = async () => {
     try {
       await authServices.logout();
