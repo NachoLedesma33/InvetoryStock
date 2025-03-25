@@ -1,10 +1,26 @@
 "use client";
 
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import LoginForm from "@/components/auth/LoginForm";
 
 export default function Home() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push("/products");
+    }
+  }, [user, router]);
+
   return (
-      <div className="container px-4 py-8 mx-auto">
-        <h1 className="mb-8 text-4xl font-bold text-center " >Productos</h1>
+    <div className="flex items-center justify-center min-h-[calc(100vh-16rem)]">
+      <div className="w-full max-w-md px-4">
+        <LoginForm />
       </div>
+    </div>
   );
 }
