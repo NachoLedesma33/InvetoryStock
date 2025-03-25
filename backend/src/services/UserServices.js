@@ -16,8 +16,8 @@ export class UserService {
             username: userData.username,
             email: userData.email,
             password: userData.password,
-            isApiUser: true
-          }
+            isApiUser: true,
+          },
         });
       }
 
