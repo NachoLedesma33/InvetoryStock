@@ -9,7 +9,7 @@ export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Redirect if already logged in
+
   useEffect(() => {
     if (user) {
       router.push("/products");
