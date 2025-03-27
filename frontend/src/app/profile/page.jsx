@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { user, error, logout } = useAuth();
@@ -17,7 +18,7 @@ export default function ProfilePage() {
     email: user?.email || "",
     phone: user?.phone || "",
   });
-
+  const router = useRouter();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -174,9 +175,7 @@ export default function ProfilePage() {
                 <div className="mt-4">
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      // Aca falta la navegación al cambio de contraseña
-                    }}
+                    onClick={() => router.push("/profile/change-password")}
                     className="w-full"
                   >
                     Cambiar Contraseña
