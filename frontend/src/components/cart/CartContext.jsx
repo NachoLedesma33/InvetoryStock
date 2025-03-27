@@ -11,7 +11,6 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  // Fetch user cart when user is logged in
   useEffect(() => {
     const fetchCart = async () => {
       if (!user) {
@@ -38,7 +37,6 @@ export const CartProvider = ({ children }) => {
 
     setLoading(true);
     try {
-      // Check if product is already in cart
       const existingProductIndex = cart.products.findIndex(
         (item) => item.id === product.id
       );
@@ -46,7 +44,6 @@ export const CartProvider = ({ children }) => {
       let updatedProducts;
 
       if (existingProductIndex >= 0) {
-        // Update quantity if product already exists
         updatedProducts = [...cart.products];
         updatedProducts[existingProductIndex] = {
           ...updatedProducts[existingProductIndex],
@@ -54,7 +51,6 @@ export const CartProvider = ({ children }) => {
             (updatedProducts[existingProductIndex].quantity || 1) + quantity,
         };
       } else {
-        // Add new product to cart
         updatedProducts = [...cart.products, { ...product, quantity }];
       }
 
@@ -89,10 +85,8 @@ export const CartProvider = ({ children }) => {
         products: updatedProducts,
       };
 
-      // Update cart in backend
       await updateCart(updatedCart);
 
-      // Update local state
       setCart(updatedCart);
     } catch (err) {
       console.error("Failed to remove from cart:", err);
@@ -136,11 +130,9 @@ export const CartProvider = ({ children }) => {
         userId: user.id,
         products: [],
       };
-
-      // Update cart in backend
+      
       await updateCart(emptyCart);
 
-      // Update local state
       setCart(emptyCart);
     } catch (err) {
       console.error("Failed to clear cart:", err);
