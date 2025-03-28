@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { useCart } from "@/hooks/useCart";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { CartIcon } from "@/components/cart/CartIcon";
 

@@ -1,63 +1,69 @@
 "use client";
 
-import React from "react";
+import React, { forwardRef } from "react";
 
-export const Button = ({
-  children,
-  onClick,
-  type = "button",
-  variant = "primary",
-  size = "medium",
-  fullWidth = false,
-  disabled = false,
-  className = "",
-  ...props
-}) => {
-  const baseClasses =
-    "rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+export const Input = forwardRef(
+  (
+    {
+      label,
+      type = "text",
+      id,
+      name,
+      value,
+      onChange,
+      placeholder,
+      error,
+      disabled = false,
+      required = false,
+      className = "",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div className="w-full">
+        {label && (
+          <label
+            htmlFor={id || name}
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
 
-  const variantClasses = {
-    primary:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600",
-    secondary:
-      "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600",
-    outline:
-      "bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800",
-    danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600",
-  };
+        <input
+          ref={ref}
+          type={type}
+          id={id || name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          required={required}
+          className={`
+          w-full px-3 py-2 rounded-md border 
+          ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"} 
+          bg-white dark:bg-gray-800
+          text-gray-900 dark:text-gray-100
+          placeholder-gray-400 dark:placeholder-gray-500
+          focus:outline-none focus:ring-2 
+          ${error ? "focus:ring-red-500" : "focus:ring-blue-500"}
+          focus:border-transparent
+          disabled:bg-gray-100 disabled:text-gray-500 
+          disabled:dark:bg-gray-700 disabled:dark:text-gray-400
+          ${className}
+        `}
+          {...props}
+        />
 
-  const sizeClasses = {
-    small: "py-1 px-3 text-sm",
-    medium: "py-2 px-4 text-base",
-    large: "py-3 px-6 text-lg",
-  };
+        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      </div>
+    );
+  }
+);
 
-  const widthClass = fullWidth ? "w-full" : "";
-  const disabledClass = disabled
-    ? "opacity-50 cursor-not-allowed"
-    : "cursor-pointer";
+Input.displayName = "Input";
 
-  const buttonClasses = `
-    ${baseClasses} 
-    ${variantClasses[variant]} 
-    ${sizeClasses[size]} 
-    ${widthClass} 
-    ${disabledClass} 
-    ${className}
-  `;
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={buttonClasses}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
-export default Button;
+export default Input;

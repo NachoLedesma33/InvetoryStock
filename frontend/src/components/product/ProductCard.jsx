@@ -7,8 +7,8 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { theme } from "@/styles/theme";
 import { useCart } from "@/hooks/useCart";
-import theme from "@/styles/theme";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   maxWidth: 345,

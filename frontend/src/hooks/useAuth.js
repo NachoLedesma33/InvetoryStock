@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import {
   getCurrentUser,
   loginUser,
-  logout as logoutUser,
+  logoutUser,
   registerUser,
 } from "@/services/auth";
 
@@ -15,7 +15,7 @@ export const useAuth = () => {
 
   const checkAuth = async () => {
     try {
-      const userData = await getCurrentUser.getCurrentUser();
+      const userData = await getCurrentUser();
       setUser(userData);
     } catch (err) {
       setUser(null);
