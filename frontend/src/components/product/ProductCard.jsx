@@ -7,7 +7,8 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import theme from "../../../styles/theme";
+import { useCart } from "@/hooks/useCart";
+import theme from "@/styles/theme";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   maxWidth: 345,
@@ -20,9 +21,14 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const ProductCard = ({ product }) => {
   const { id, name, price, image, stock } = product;
+  const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
-    console.log("Agregando producto al carrito:", id);
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(id, 1);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   return (
@@ -51,13 +57,13 @@ const ProductCard = ({ product }) => {
           variant="contained"
           color="primary"
           onClick={handleAddToCart}
+          disabled={stock === 0}
           sx={{
             mt: 2,
             width: "100%",
-            borderRadius: theme.borderRadius.md,
           }}
         >
-          Agregar al carrito
+          {stock === 0 ? "Agotado" : "Agregar al carrito"}
         </Button>
       </CardContent>
     </StyledCard>

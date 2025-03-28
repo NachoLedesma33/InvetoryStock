@@ -49,3 +49,37 @@ export const deleteCart = async (cartId) => {
     throw new Error(error.response?.data?.message || "Failed to delete cart");
   }
 };
+
+export const addToCart = async (userId, productId, quantity) => {
+  try {
+    const response = await apiClient.post(`/carts/${userId}/items`, {
+      product_id: productId,
+      quantity: quantity,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to add to cart");
+  }
+};
+
+export const removeFromCart = async (userId, productId) => {
+  try {
+    const response = await apiClient.delete(
+      `/carts/${userId}/items/${productId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to remove from cart"
+    );
+  }
+};
+
+export const clearCart = async (userId) => {
+  try {
+    const response = await apiClient.delete(`/carts/${userId}/items`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to clear cart");
+  }
+};

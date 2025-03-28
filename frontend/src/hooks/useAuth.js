@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authServices } from "@/services/auth";
+import {
+  getCurrentUser,
+  loginUser,
+  logout as logoutUser,
+  registerUser,
+} from "@/services/auth";
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -10,7 +15,7 @@ export const useAuth = () => {
 
   const checkAuth = async () => {
     try {
-      const userData = await authServices.getCurrentUser();
+      const userData = await getCurrentUser.getCurrentUser();
       setUser(userData);
     } catch (err) {
       setUser(null);
@@ -22,7 +27,7 @@ export const useAuth = () => {
 
   const login = async (credentials) => {
     try {
-      const userData = await authServices.login(credentials);
+      const userData = await loginUser(credentials);
       setUser(userData);
       router.push("/dashboard");
       return true;
@@ -34,7 +39,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await authServices.logout();
+      await logoutUser();
       setUser(null);
       router.push("/login");
       return true;
@@ -46,7 +51,7 @@ export const useAuth = () => {
 
   const register = async (userData) => {
     try {
-      const user = await authServices.register(userData);
+      const user = await registerUser(userData);
       setUser(user);
       router.push("/dashboard");
       return true;
@@ -70,3 +75,5 @@ export const useAuth = () => {
     isAuthenticated: !!user,
   };
 };
+
+export default useAuth;

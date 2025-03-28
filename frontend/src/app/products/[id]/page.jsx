@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import ProductList from "@/components/products/ProductList";
+import ProductList from "@/components/product/ProductList";
 
 export default function ProductsPage() {
   const { user, loading } = useAuth();

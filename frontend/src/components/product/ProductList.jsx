@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getAllProducts } from "@/services/products";
-import ProductCard from "@/components/products/ProductCard";
+import { getAllProducts } from "@/services/product";
+import ProductCard from "@/components/product/ProductCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 

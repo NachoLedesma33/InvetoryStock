@@ -1,5 +1,11 @@
-import { useState, useEffect } from "react";
-import { cartServices } from "@/services/cart";
+import { useState, useEffect, useCallback } from "react";
+import {
+  getUserCart,
+  updateCart,
+  addToCart as addToCartService,
+  removeFromCart as removeFromCartService,
+  clearCart as clearCartService,
+} from "@/services/cart";
 import { useAuth } from "./useAuth";
 
 export const useCart = () => {
@@ -8,14 +14,14 @@ export const useCart = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     try {
       if (!user) {
         setCart(null);
         return;
       }
 
-      const cartData = await cartServices.getUserCart(user.id);
+      const cartData = await getUserCart(user.id);
       setCart(cartData);
     } catch (err) {
       setError(err.message);
@@ -23,15 +29,11 @@ export const useCart = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, setCart, setError, setLoading]);
 
   const addToCart = async (productId, quantity = 1) => {
     try {
-      const updatedCart = await cartServices.addToCart(
-        user.id,
-        productId,
-        quantity
-      );
+      const updatedCart = await addToCartService(user.id, productId, quantity);
       setCart(updatedCart);
       return true;
     } catch (err) {
@@ -42,7 +44,7 @@ export const useCart = () => {
 
   const removeFromCart = async (productId) => {
     try {
-      const updatedCart = await cartServices.removeFromCart(user.id, productId);
+      const updatedCart = await removeFromCartService(user.id, productId);
       setCart(updatedCart);
       return true;
     } catch (err) {
@@ -53,11 +55,7 @@ export const useCart = () => {
 
   const updateCartItem = async (productId, newQuantity) => {
     try {
-      const updatedCart = await cartServices.updateCartItem(
-        user.id,
-        productId,
-        newQuantity
-      );
+      const updatedCart = await updateCart(user.id, productId, newQuantity);
       setCart(updatedCart);
       return true;
     } catch (err) {
@@ -67,7 +65,7 @@ export const useCart = () => {
   };
 
   const calculateTotal = () => {
-    if (!cart || !cart.items) return 0;
+    if (!cart?.items) return 0;
     return cart.items.reduce(
       (total, item) => total + item.price * item.quantity,
       0
@@ -76,7 +74,7 @@ export const useCart = () => {
 
   const clearCart = async () => {
     try {
-      await cartServices.clearCart(user.id);
+      await clearCartService(user.id);
       setCart(null);
       return true;
     } catch (err) {
@@ -87,24 +85,28 @@ export const useCart = () => {
 
   useEffect(() => {
     loadCart();
-  }, [user]);
+  }, [loadCart, user]);
 
   useEffect(() => {
     if (user) {
       loadCart();
     }
-  }, [user?.id]);
+  }, [user.id, loadCart, user]);
 
   return {
     cart,
     loading,
     error,
+    loadCart,
     addToCart,
     removeFromCart,
     updateCartItem,
-    calculateTotal,
     clearCart,
-    cartTotal: cart ? calculateTotal() : 0,
-    cartItems: cart?.items || [],
+    calculateTotal,
+    total: calculateTotal(),
+    hasItems: !!cart?.items?.length,
+    isAuthenticated: !!user,
   };
 };
+
+export default useCart;

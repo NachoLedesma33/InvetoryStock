@@ -1,51 +1,24 @@
-import { useState, useEffect } from 'react';
-import { themeServices } from '@/services/theme';
+import { useState, useEffect } from "react";
+import { getTheme, setTheme } from "@/services/theme";
 
 export const useTheme = () => {
-  const [theme, setTheme] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [theme, setThemeState] = useState(getTheme());
 
-  const loadTheme = async () => {
-    try {
-      const currentTheme = await themeServices.getTheme();
-      setTheme(currentTheme);
-    } catch (err) {
-      setError(err.message);
-      setTheme('light'); 
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleTheme = async () => {
-    try {
-      const newTheme = theme === 'light' ? 'dark' : 'light';
-      await themeServices.setTheme(newTheme);
-      setTheme(newTheme);
-      return true;
-    } catch (err) {
-      setError(err.message);
-      return false;
-    }
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    setThemeState(newTheme);
   };
 
   useEffect(() => {
-    if (theme) {
-      document.documentElement.className = theme;
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    loadTheme();
+    const storedTheme = getTheme();
+    setThemeState(storedTheme);
   }, []);
 
   return {
     theme,
-    loading,
-    error,
     toggleTheme,
-    isDark: theme === 'dark',
-    isLight: theme === 'light',
   };
 };
+
+export default useTheme;
