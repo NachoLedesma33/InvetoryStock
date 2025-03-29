@@ -7,6 +7,7 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 10000,
 });
 
 apiClient.interceptors.request.use(
@@ -17,13 +18,18 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error("Error en request interceptor:", error);
+    return Promise.reject(error);
+  }
 );
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error("Error en response interceptor:", error);
     const { response } = error;
+
     if (response && response.status === 401) {
       localStorage.removeItem("authToken");
       window.location.href = "/";

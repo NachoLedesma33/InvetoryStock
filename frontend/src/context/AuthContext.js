@@ -2,26 +2,27 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getCurrentUser, loginUser, logoutUser } from "@/services/auth";
 
 const AuthContext = createContext();
 
-export function AuthProvider({ childern }) {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter;
+  const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem("authToken");
         if (token) {
-          const userData = await getCurrentUser(token);
+          const userData = await getCurrentUser();
           setUser(userData);
         }
       } catch (error) {
-        console.error(error);
-        setError(error.message);
+        console.error("Error checking auth:", error);
+        setError(error.message || "Error al verificar la autenticación");
         localStorage.removeItem("authToken");
       } finally {
         setLoading(false);
@@ -31,15 +32,16 @@ export function AuthProvider({ childern }) {
   }, []);
 
   const login = async (credentials) => {
-    setLoading(true);
-    setError(null);
-
     try {
+      setLoading(true);
+      setError(null);
+      
       const { user, token } = await loginUser(credentials);
       setUser(user);
       localStorage.setItem("authToken", token);
       router.push("/products");
     } catch (error) {
+      console.error("Error en login:", error);
       setError(error.message || "Falla en el inicio de sesión");
     } finally {
       setLoading(false);
@@ -53,12 +55,14 @@ export function AuthProvider({ childern }) {
       localStorage.removeItem("authToken");
       router.push("/");
     } catch (error) {
+      console.error("Error en logout:", error);
       setError(error.message || "Falla en el cierre de sesión");
     }
   };
+
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {childern}
+      {children}
     </AuthContext.Provider>
   );
 }

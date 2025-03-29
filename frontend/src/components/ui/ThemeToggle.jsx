@@ -8,10 +8,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full hover-gay-200 dark:hover:bg-gay-700 transition-colors"
-      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode}`}
+      className="p-2 rounded-full hover-gray-200 dark:hover-gray-700 transition-colors"
+      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
-      {theme === "ligth" ? (
+      {theme === "light" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"
