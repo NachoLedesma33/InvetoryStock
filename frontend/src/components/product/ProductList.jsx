@@ -1,119 +1,274 @@
-"use client";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Button,
+  Box,
+  Chip,
+  Container,
+  TextField,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import { ShoppingBag, Search } from "lucide-react";
+import { useStore } from "@/store/useStore";
 
-import React, { useState, useEffect } from "react";
-import { getAllProducts } from "@/services/product";
-import ProductCard from "@/components/product/ProductCard";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+const API_URL = process.env.API_URL;
 
 export const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { products, setProducts, addToCart } = useStore();
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await getAllProducts();
-        setProducts(data);
+    fetch(`${API_URL}/products`)
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        fetch("https://fakestoreapi.com/products")
+          .then((res) => res.json())
+          .then((data) => setProducts(data));
+      });
+  }, [setProducts]);
 
-        const uniqueCategories = [
-          ...new Set(data.map((product) => product.category)),
-        ];
-        setCategories(uniqueCategories);
-      } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category === selectedCategory ? "" : category);
-  };
+  const categories = [
+    "all",
+    ...new Set(products.map((product) => product.category)),
+  ];
 
   const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "all" || product.category === selectedCategory;
     const matchesSearch =
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesCategory && matchesSearch;
   });
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  const handleOpenDialog = (product) => {
+    setSelectedProduct(product);
+    setOpenDialog(true);
+  };
 
-  if (error) {
-    return (
-      <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
-        <p>{error}</p>
-      </div>
-    );
-  }
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedProduct(null);
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            type="text"
-            placeholder="Search products..."
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Paper sx={{ p: 3, mb: 3, borderRadius: "12px", boxShadow: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mb: 3,
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Buscar productos"
+            variant="outlined"
             value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <Box sx={{ mr: 1 }}>
+                  <Search size={20} />
+                </Box>
+              ),
+            }}
+            sx={{
+              borderRadius: "8px",
+            }}
           />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "primary" : "outline"}
-              size="small"
-              onClick={() => handleCategoryChange(category)}
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-      </div>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            {categories.map((category) => (
+              <Chip
+                key={category}
+                label={category === "all" ? "Todos" : category}
+                onClick={() => setSelectedCategory(category)}
+                variant={selectedCategory === category ? "filled" : "outlined"}
+                sx={{
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  "&.MuiChip-filled": {
+                    bgcolor: "primary.main",
+                    color: "white",
+                  },
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
 
-      {filteredProducts.length === 0 ? (
-        <div className="text-center py-10">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            No se encontraron productos
-          </h3>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
-            Intente ajustar su búsqueda o filtro para encontrar lo que está
-            buscando.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "1fr 1fr",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(4, 1fr)",
+            },
+            gap: 3,
+          }}
+        >
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <Card
+              key={product.id}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                borderRadius: "12px",
+                boxShadow: 2,
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  boxShadow: 5,
+                },
+                cursor: "pointer",
+              }}
+              onClick={() => handleOpenDialog(product)}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={product.image}
+                alt={product.title}
+                sx={{
+                  objectFit: "cover",
+                  borderRadius: "12px 12px 0 0",
+                  transition: "opacity 0.3s ease",
+                  "&:hover": {
+                    opacity: 0.9,
+                  },
+                }}
+              />
+              <CardContent
+                sx={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  p: 2,
+                }}
+              >
+                <Box>
+                  <Typography
+                    gutterBottom
+                    variant="h6"
+                    component="h2"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {product.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: "0.875rem",
+                      mb: 2,
+                      height: "3em",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2,
+                    }}
+                  >
+                    {product.description}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    pt: 2,
+                    borderTop: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    sx={{ fontWeight: 700 }}
+                  >
+                    ${Number(product.price || 0).toFixed(2)}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
+                    startIcon={<ShoppingBag size={18} />}
+                    sx={{
+                      borderRadius: "8px",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      transition: "background 0.3s",
+                      "&:hover": {
+                        backgroundColor: "primary.dark",
+                      },
+                    }}
+                  >
+                    Agregar
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
           ))}
-        </div>
-      )}
-    </div>
+        </Box>
+      </Paper>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        {selectedProduct && (
+          <>
+            <DialogTitle>{selectedProduct.title}</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1" color="text.secondary">
+                {selectedProduct.description}
+              </Typography>
+              <Typography
+                variant="h6"
+                color="primary"
+                sx={{ fontWeight: 700, mt: 2 }}
+              >
+                ${Number(selectedProduct.price || 0).toFixed(2)}
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="secondary">
+                Cerrar
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => addToCart(selectedProduct)}
+                startIcon={<ShoppingBag size={18} />}
+              >
+                Agregar al carrito
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+    </Container>
   );
 };
-
-export default ProductList;
