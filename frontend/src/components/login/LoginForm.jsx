@@ -54,7 +54,7 @@ export const LoginForm = () => {
             Bienvenido a la Fake Store
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Sign in to start shopping
+            Inicie sesión para iniciar su compra
           </Typography>
         </Box>
         <form onSubmit={handleSubmit}>
