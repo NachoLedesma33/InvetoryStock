@@ -42,7 +42,7 @@ export const Cart = ({ open, onClose }) => {
 
         {cart.length === 0 ? (
           <Box sx={{ p: 3, textAlign: "center" }}>
-            <Typography color="text.secondary">Your cart is empty</Typography>
+            <Typography color="text.secondary">El carrito esta vacío</Typography>
           </Box>
         ) : (
           <List sx={{ flexGrow: 1, overflow: "auto", px: 2 }}>
